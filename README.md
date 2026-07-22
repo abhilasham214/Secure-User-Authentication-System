@@ -1,6 +1,4 @@
-# PRODIGY_FS_01
-
-# Secure User Authentication System – Full Stack Demo
+# Secure User Authentication System
 
 As part of my internship at **Prodigy Infotech**, I developed a complete **role-based user authentication system** with session management and protected routes — a key foundation for building secure web applications.  
 
