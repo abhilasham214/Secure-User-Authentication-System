@@ -1,106 +1,122 @@
-# 🔒 Secure User Authentication & Role-Based Access Control (RBAC) System
+# Secure User Authentication and Role-Based Access Control (RBAC) System
 
-Developed during my software engineering internship at **Prodigy InfoTech** (`Prodigy_FS_1`), this project is a production-grade **User Authentication and Session Management System** built with **Node.js, Express.js, MongoDB, Mongoose, and EJS**.
+Developed as part of an engineering internship at Prodigy InfoTech (`Prodigy_FS_1`), this application is an enterprise-grade User Authentication, Session Management, and Role-Based Access Control system built using Node.js, Express, MongoDB, Mongoose, and EJS.
 
----
+## System Architecture
 
-## 📌 Features
+```text
++-------------------------------------------------------------------+
+|                           Client Request                          |
++-------------------------------------------------------------------+
+                                  |
+                                  v
++-------------------------------------------------------------------+
+|                     Express Router Middleware                     |
+|                        (routes/auth.js)                           |
++-------------------------------------------------------------------+
+                                  |
+                 +----------------+----------------+
+                 |                                 |
+                 v                                 v
++---------------------------------+ +-------------------------------+
+|    Bcrypt Password Hashing      | |    MongoDB Session Store      |
+|    (10 Salt Rounds Hashing)     | |  (connect-mongo Persistence)  |
++---------------------------------+ +-------------------------------+
+                                  |
+                                  v
++-------------------------------------------------------------------+
+|               Role Verification Middleware (RBAC)                 |
+|             Checks User Role ('user' vs 'admin')                  |
++-------------------------------------------------------------------+
+                 |                                 |
+        (Role == 'user')                    (Role == 'admin')
+                 v                                 v
++---------------------------------+ +-------------------------------+
+|     Protected User Dashboard    | |     Protected Admin Panel     |
+|          (/dashboard)           | |            (/admin)           |
++---------------------------------+ +-------------------------------+
+```
 
-- **🔑 Secure Registration & Login**: User registration with **Bcrypt** password hashing (10 salt rounds).
-- **🛡️ Role-Based Access Control (RBAC)**: Supports `user` and `admin` roles with custom middleware authorization.
-- **💾 Session Persistence with MongoDB**: Uses `express-session` backed by `connect-mongo` so sessions persist reliably across server restarts.
-- **🚪 Protected Routes & Dashboards**: Dedicated `/dashboard` for standard users and `/admin` panel for administrative roles.
-- **🔒 Secure Logout**: Clears session store records and redirects safely to login.
-- **🎨 Responsive View Rendering**: Server-side rendered views using **EJS** with clean CSS styling.
+## Key Features
 
----
+- Password Hashing Security: Password verification using Bcrypt with 10 salt rounds to prevent credential exposure.
+- Role-Based Access Control (RBAC): Middleware layer validating access privileges for standard `user` and elevated `admin` roles.
+- Persistent Session Management: Integration of `express-session` with `connect-mongo` ensuring session state survives server restarts.
+- Protected Routing: Guarded endpoints redirecting unauthenticated or unauthorized requests.
+- Server-Side Rendering: Clean EJS templates for authentication portals and control dashboards.
 
-## 🛠️ Project Structure
+## Repository Structure
 
 ```text
 Secure-User-Authentication-System/
 ├── routes/
-│   ├── auth.js            # Express router for register, login, & logout handlers
-│   └── dashboard.js       # Express router for protected user & admin dashboard routes
+│   ├── auth.js            # Authentication routes (register, login, logout)
+│   └── dashboard.js       # Protected application and admin routes
 ├── models/
-│   └── user.js            # Mongoose Schema for User (username, password, role)
+│   └── User.js            # Mongoose User model definition
 ├── views/
-│   ├── login.ejs          # Login form template
-│   ├── register.ejs       # User registration form template
+│   ├── login.ejs          # Login form view
+│   ├── register.ejs       # Registration form view
 │   ├── dashboard.ejs      # User dashboard view
-│   └── admin.ejs          # Protected Admin panel view
+│   └── admin.ejs          # Administrator panel view
 ├── public/
-│   └── styles.css         # CSS styles for forms and dashboard layouts
-├── .env                   # Environment configurations (PORT, MONGO_URI, SESSION_SECRET)
-├── server.js              # Express app entry point & session middleware initialization
+│   └── styles.css         # Component and layout stylesheets
+├── .env                   # Environment variable definitions
+├── server.js              # Server initialization and middleware pipeline
 ├── package.json           # Dependencies manifest
 └── README.md              # Project documentation
 ```
 
----
+## Tech Stack
 
-## ⚙️ Tech Stack
+- Backend Framework: Node.js, Express.js
+- Database & ORM: MongoDB, Mongoose
+- Security & Authentication: `bcryptjs`, `express-session`, `connect-mongo`
+- Templating Engine: EJS
+- Environment Configuration: `dotenv`
 
-- **Backend**: Node.js, Express.js
-- **Database & ORM**: MongoDB, Mongoose
-- **Session Management**: `express-session`, `connect-mongo`
-- **Security**: `bcryptjs`
-- **Template Engine**: EJS (Embedded JavaScript)
-- **Environment**: `dotenv`
+## Local Setup and Installation
 
----
+### Prerequisites
 
-## 🚀 Getting Started
+- Node.js (v14.0.0 or higher)
+- MongoDB instance running locally or accessible via URI string
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/abhilasham214/Secure-User-Authentication-System.git
-cd Secure-User-Authentication-System
-```
+### Setup Guide
 
-### 2. Install dependencies
-```bash
-npm install
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/abhilasham214/Secure-User-Authentication-System.git
+   cd Secure-User-Authentication-System
+   ```
 
-### 3. Environment Setup
-Create a `.env` file in the root directory:
-```env
-PORT=3000
-MONGO_URI=mongodb://localhost:27017/secure_auth_db
-SESSION_SECRET=super_secret_session_key_123!
-```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-### 4. Start the Application
-```bash
-npm start
-# or: node server.js
-```
-Open `http://localhost:3000/login` in your web browser.
+3. Configure environment variables by creating a `.env` file in the root folder:
+   ```env
+   PORT=3000
+   MONGO_URI=mongodb://localhost:27017/secure_auth_db
+   SESSION_SECRET=your_strong_session_secret_key
+   ```
 
----
+4. Start the application server:
+   ```bash
+   npm start
+   # Alternative execution:
+   node server.js
+   ```
 
-## 🔐 Authorization Logic Flow
+5. Open your browser and navigate to `http://localhost:3000/login`.
 
-```text
-[ Client Request ]
-       │
-       ▼
-[ express-session Check ] ──(No Session)──► Redirect to /login
-       │
-  (Session Active)
-       │
-       ▼
-[ Role Verification Middleware ] ──(Role != admin on /admin)──► 403 Access Denied
-       │
-  (Role Authorized)
-       │
-       ▼
-[ Render Protected Dashboard / Admin Panel ]
-```
+## Security Implementations
 
----
+- Password Salting and Hashing: Uses `bcrypt.hash(password, 10)` prior to user creation in MongoDB.
+- Session Isolation: Session IDs stored securely in database stores; destroyed completely on logout (`req.session.destroy()`).
+- Authorization Middleware: Validates `req.session.userId` and `req.session.role` before rendering protected views.
 
-## 🛡️ License
+## License
 
-This project is licensed under the [MIT License](LICENSE).
+This repository is distributed under standard open-source terms.
